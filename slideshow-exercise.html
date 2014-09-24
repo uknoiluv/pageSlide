@@ -81,8 +81,11 @@
       var url = "http://www.healthline.com/";
       var imageUrlCur = slides[i].image.imageUrl;
       var imageUrlNext = slides[i + 1].image.imageUrl;
-      $('.current').prepend('<img src="' + url + imageUrlCur + '">');
-      $('.next').prepend('<img src="' + url + imageUrlNext + '">');
+      $('.current').prepend('<img src="' + url + imageUrlCur + '">').css('display', 'none');
+      $('.next').prepend('<img src="' + url + imageUrlNext + '">').css('display', 'none');
+      $('li').first().show('fast', function showNext(){
+        $(this).next('li').show("fast");
+      })
     },
     error: function (data){
       console.log('failed');
@@ -138,7 +141,6 @@
 
   var callSinglePixelImg = function(){
     var url = 'http://www.healthline.com/images/clear.gif?' + new Date().getTime();
-
     $('body').append("<img class='singlePixel' src='"+ url + "'>");
     $('.singlePixel').remove();
     // $('body').load('http://www.healthline.com/images/clear.gif', function() {
