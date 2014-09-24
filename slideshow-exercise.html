@@ -49,8 +49,8 @@
       etc
     </li> -->
   </ul>
-  <button id="previous" type="button" name="previous">previous</button>
-  <button id="next" type="button" name="next">next</button>
+  <button id="previous" onclick="callSinglePixelImg()" type="button" name="previous">previous</button>
+  <button id="next" onclick="callSinglePixelImg()" type="button" name="next">next</button>
 
   <button id="default" type="button" name="default">default</button>
   <button id="alpha" type="button" name="alpha">alpha</button>
@@ -65,7 +65,7 @@
   var i = 0;
   var alphaSorted = false;
   var slides = [];
-  var slidesOrg = [];
+  var slidesOrg;
   $.ajax({
     url: 'https://api2.healthline.com/api/service/2.0/slideshow/content?partnerId=7eef498c-f7fa-4f7c-81fd-b1cc53ac7ebc&contentid=17103&includeLang=en',
     type: 'GET',
@@ -112,6 +112,7 @@
 
   $('#default').on('click', function(){
     if(alphaSorted){
+      alphaSorted = !alphaSorted;
       slides = slidesOrg;
       console.log('slides', slides);
     }
@@ -119,7 +120,8 @@
 
   $('#alpha').on('click', function(){
     if(!alphaSorted){
-      slidesOrg = slidesOrg || slides;
+      alphaSorted = !alphaSorted;
+      slidesOrg = slidesOrg || slides.slice(0);
       slides.sort(function(a, b){
         if(a.title > b.title){
           return 1;
@@ -132,6 +134,25 @@
       console.log('slides', slides);
     }
   });
+
+  var callSinglePixelImg = function(){
+    $.ajax({
+      url: 'http://www.healthline.com/images/clear.gif',
+      type: 'GET',
+      dataType: 'jsonp',
+      contentType: 'image/gif',
+      xhrFields: {
+        withCrendentials: true
+      },
+      success: function (data){
+        console.log('hit');
+        console.log('data', data);
+      },
+      error: function (){
+        console.log('failed');
+      } 
+    });
+  };
 
 
 </script>
