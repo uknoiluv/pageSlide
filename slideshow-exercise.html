@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<!--
+1. Use HTML, CSS and JavaScript to build an image slideshow
+2. Do not use any third party slideshow, image or photo gallery plugins
+3. You may use a framework like jQuery or AngularJS
+4. Use deferred image loading
+   - load only two images on page load (the current slide and the next slide)
+   - load two images at a time on next button click (the next slide image and the slide image after next)
+5. User event tracking
+   - on each previous or next button click, call single pixel image below
+   - http://www.healthline.com/images/clear.gif
+6. Use Healthline API to get slideshow data:
+   - slideshow data URL:
+   - https://api2.healthline.com/api/service/2.0/slideshow/content?partnerId=7eef498c-f7fa-4f7c-81fd-b1cc53ac7ebc&contentid=17103&includeLang=en
+   - use the following data items:
+   - Page title
+   - summary
+   - individual slide data (slides array):
+     - title
+     - image (image object)
+     - slide text content (body)
+7. Sort order filter:
+   - create an interface to allow the user to change the sort order of the slides
+   - two options: default, alpha
+   - sort by alpha on slide title
+   - default order is from JSON data
+8. You may use Healthline Slideshow as inspiration for UI/UX (NOT a requirement)
+   - http://www.healthline.com/health-slideshow/7-ways-lessen-your-back-pain
+9. Update the HTML as needed
+10. Display one image at a time
+11. Your submitted work must be a functional stand-alone working HTML page
+-->
+
+
+<!-- example of HTML structure -->
+<div class="slideshow">
+  <ul class="slides">
+    <li class="current">
+      <!-- slide markup goes here -->
+    </li>
+    <li class="next">
+      <!-- slide markup goes here -->
+    </li>
+    <!-- <li>
+      etc
+    </li> -->
+  </ul>
+  <button id="previous" type="button" name="previous">previous</button>
+  <button id="next" type="button" name="next">next</button>
+</div>
+
+</body>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script> -->
+<script>
+  var i = 0;
+  var slides = [];
+  $.ajax({
+    url: 'https://api2.healthline.com/api/service/2.0/slideshow/content?partnerId=7eef498c-f7fa-4f7c-81fd-b1cc53ac7ebc&contentid=17103&includeLang=en',
+    type: 'GET',
+    dataType: 'jsonp',
+    // contentType: 'application/json',
+    // contentType: 'text/plain',
+    xhrFields: {
+      withCrendentials: true
+    },
+    success: function (data){
+      slides = data.data[0].slides;
+      var url = "http://www.healthline.com/";
+      var imageUrlCur = slides[i].image.imageUrl;
+      var imageUrlNext = slides[i + 1].image.imageUrl;
+      $('.current').prepend('<img src="' + url + imageUrlCur + '">');
+      $('.next').prepend('<img src="' + url + imageUrlNext + '">');
+      console.log(slides);
+    },
+    error: function (data){
+      console.log('failed');
+    } 
+  });
+  
+  // $('#previous').on('click', function(){
+    
+  // });
+
+  $('#next').on('click', function(){
+    // var slidesArr = $('li').toArray();
+    // console.log('slidesArr', slidesArr);
+    if(i < 7){
+      i++;
+      var url = "http://www.healthline.com/";
+      console.log('slides', slides);
+      var imageUrlNext = slides[i + 1].image.imageUrl;
+      $('.current img').replaceWith($('.next img'));
+      $('.next').prepend('<img src="' + url + imageUrlNext + '">');
+    }
+  });
+
+  
+  $('#previous').on('click', function(){
+    // var slidesArr = $('li').toArray();
+    // console.log('slidesArr', slidesArr);
+    if(i > 0){
+      i--;
+      var url = "http://www.healthline.com/";
+      console.log('slides', slides);
+      var imageUrlNext = slides[i].image.imageUrl;
+      $('.next img').replaceWith($('.current img'));
+      $('.current').prepend('<img src="' + url + imageUrlNext + '">');
+    }
+  });
+
+  // var jsonpRequest = function(url, callback){
+  //   window.callback = callback;
+  //   var scriptElem = document.createElement('script');
+  //   scriptElem.setAttribute('type', 'text/javascript');
+  //   scriptElem.setAttribute('src', url + '?callback=callback');
+  //   document.head.appendChild(scriptElem);
+  // };
+
+  // jsonpRequest('https://api2.healthline.com/api/service/2.0/slideshow/content?partnerId=7eef498c-f7fa-4f7c-81fd-b1cc53ac7ebc&contentid=17103&includeLang=en', function(data){
+  //   console.log('jsonpRequest hit');
+  //   console.log('data', data);
+  // });
+</script>
+
+</html>
