@@ -60,6 +60,7 @@
 
 </body>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
 <!-- <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script> -->
 <script>
   var i = 0;
@@ -136,22 +137,17 @@
   });
 
   var callSinglePixelImg = function(){
-    $.ajax({
-      url: 'http://www.healthline.com/images/clear.gif',
-      type: 'GET',
-      dataType: 'jsonp',
-      contentType: 'image/gif',
-      xhrFields: {
-        withCrendentials: true
-      },
-      success: function (data){
-        console.log('hit');
-        console.log('data', data);
-      },
-      error: function (){
-        console.log('failed');
-      } 
-    });
+    var url = 'http://www.healthline.com/images/clear.gif?' + new Date().getTime();
+
+    $('body').append("<img class='singlePixel' src='"+ url + "'>");
+    $('.singlePixel').remove();
+    // $('body').load('http://www.healthline.com/images/clear.gif', function() {
+    //   alert( "Load was performed." );
+    // });
+    // var script = document.createElement('script');
+    // script.type = 'image/gif';
+    // script.src = 'http://www.healthline.com/images/clear.gif';
+    // $('head').append(script);
   };
 
 
