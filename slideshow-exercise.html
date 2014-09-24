@@ -51,6 +51,11 @@
   </ul>
   <button id="previous" type="button" name="previous">previous</button>
   <button id="next" type="button" name="next">next</button>
+
+  <button id="default" type="button" name="default">default</button>
+  <button id="alpha" type="button" name="alpha">alpha</button>
+
+
 </div>
 
 </body>
@@ -58,37 +63,32 @@
 <!-- <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script> -->
 <script>
   var i = 0;
+  var alphaSorted = false;
   var slides = [];
+  var slidesOrg = [];
   $.ajax({
     url: 'https://api2.healthline.com/api/service/2.0/slideshow/content?partnerId=7eef498c-f7fa-4f7c-81fd-b1cc53ac7ebc&contentid=17103&includeLang=en',
     type: 'GET',
     dataType: 'jsonp',
-    // contentType: 'application/json',
-    // contentType: 'text/plain',
     xhrFields: {
       withCrendentials: true
     },
     success: function (data){
+      console.log('data', data);
       slides = data.data[0].slides;
+      console.log('slides', JSON.stringify(slides));
       var url = "http://www.healthline.com/";
       var imageUrlCur = slides[i].image.imageUrl;
       var imageUrlNext = slides[i + 1].image.imageUrl;
       $('.current').prepend('<img src="' + url + imageUrlCur + '">');
       $('.next').prepend('<img src="' + url + imageUrlNext + '">');
-      console.log(slides);
     },
     error: function (data){
       console.log('failed');
     } 
   });
   
-  // $('#previous').on('click', function(){
-    
-  // });
-
   $('#next').on('click', function(){
-    // var slidesArr = $('li').toArray();
-    // console.log('slidesArr', slidesArr);
     if(i < 7){
       i++;
       var url = "http://www.healthline.com/";
@@ -99,10 +99,7 @@
     }
   });
 
-  
   $('#previous').on('click', function(){
-    // var slidesArr = $('li').toArray();
-    // console.log('slidesArr', slidesArr);
     if(i > 0){
       i--;
       var url = "http://www.healthline.com/";
@@ -113,18 +110,30 @@
     }
   });
 
-  // var jsonpRequest = function(url, callback){
-  //   window.callback = callback;
-  //   var scriptElem = document.createElement('script');
-  //   scriptElem.setAttribute('type', 'text/javascript');
-  //   scriptElem.setAttribute('src', url + '?callback=callback');
-  //   document.head.appendChild(scriptElem);
-  // };
+  $('#default').on('click', function(){
+    if(alphaSorted){
+      slides = slidesOrg;
+      console.log('slides', slides);
+    }
+  });
 
-  // jsonpRequest('https://api2.healthline.com/api/service/2.0/slideshow/content?partnerId=7eef498c-f7fa-4f7c-81fd-b1cc53ac7ebc&contentid=17103&includeLang=en', function(data){
-  //   console.log('jsonpRequest hit');
-  //   console.log('data', data);
-  // });
+  $('#alpha').on('click', function(){
+    if(!alphaSorted){
+      slidesOrg = slidesOrg || slides;
+      slides.sort(function(a, b){
+        if(a.title > b.title){
+          return 1;
+        }
+        if(a.title < b.title){
+          return -1;
+        }
+        return 0;
+      });
+      console.log('slides', slides);
+    }
+  });
+
+
 </script>
 
 </html>
