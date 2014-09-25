@@ -13,6 +13,10 @@
     .sortOrderDiv {
       clear: both;
     }
+    .slideshow {
+      height: 400px;
+      width: 600px;
+    }
   </style>
 </head>
 <body>
@@ -64,18 +68,17 @@
     </li> -->
   </ul>
   <button id="next" onclick="callSinglePixelImg()" type="button" name="next">next</button>
-
+</div>
   <!--<button id="default" type="button" name="default">default</button>
   <button id="alpha" type="button" name="alpha">alpha</button>-->
-  <div class="sortOrderDiv">Sort order filter
-    <select id="sortOrder">
-      <option slelected="selected">default</option>
-      <option>alpha</option>
-    </select>
-  </div>
-
-
+<div class="sortOrderDiv">Sort order filter
+  <select id="sortOrder">
+    <option slelected="selected">default</option>
+    <option>alpha</option>
+  </select>
 </div>
+
+
 
 </body>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -86,11 +89,23 @@
   var alphaSorted = false;
   var slides = [];
   var slidesOrg;
-  var renderOnce = function(){
+  var renderCurrent = function(){
     // $('li').first().show('slow', function showNext(){
     //   $(this).next('li').show("slow");
     // });
-    $('li').first().show();
+    $('.current').first().show();
+  };
+  var descriptionInsert = function(i){
+    var titleCur = '<div><h2>' + slides[i].title + '</h2></div>';
+    var textCur = '<div>' + slides[i].body + '</div>';
+    if(i === 8){
+      if(!$('.next div').length){
+        $('.next').prepend(textCur).prepend(titleCur);
+      }
+    }else{
+      $('.current div').remove();
+      $('.current').prepend(textCur).prepend(titleCur);
+    }
   };
 
   $.ajax({
@@ -105,7 +120,11 @@
       console.log('data', data);
       var url = "http://www.healthline.com/";
       var imageUrlCur = slides[i].image.imageUrl;
+      // var titleCur = '<h2>' + slides[i].title + '</h2>';
+      // var textCur = slides[i].body;
       var imageUrlNext = slides[i + 1].image.imageUrl;
+      // var titleNext = '<h2>' + slides[i + 1].title + '</h2>';
+      // var textNext = slides[i + 1].body;
       // $('.current').prepend('<img src="' + url + imageUrlCur + '">').css('display', 'none');
       $('.current').prepend('<img src="' + url + imageUrlCur + '">');
       // $('.next').prepend('<img src="' + url + imageUrlNext + '">').css('display', 'none');
@@ -113,7 +132,8 @@
       // $('li').first().show('fast', function showNext(){
       //   $(this).next('li').show("fast");
       // });
-      renderOnce();
+      descriptionInsert(0);
+      renderCurrent();
     },
     error: function (data){
       console.log('failed');
@@ -129,10 +149,12 @@
       var imageUrlNext = slides[i + 1].image.imageUrl;
       $('li').hide();
       $('.current img').replaceWith($('.next img'));
+      descriptionInsert(i);
       $('.next').prepend('<img src="' + url + imageUrlNext + '">');
-      renderOnce();
+      renderCurrent();
     }else if(i === 7){
       $('li').hide();
+      descriptionInsert(8);
       $('.next').show();
     }
   });
@@ -141,7 +163,8 @@
     if(i === 7){
       i--;
       $('li').hide();
-      $('li').first().show();
+      descriptionInsert(7);
+      renderCurrent();
     }else if(i > 0){
       i--;
       var url = "http://www.healthline.com/";
@@ -149,19 +172,41 @@
       $('li').hide();
       $('.next img').replaceWith($('.current img'));
       $('.current').prepend('<img src="' + url + imageUrlNext + '">');
-      renderOnce();
+      descriptionInsert(i);
+      renderCurrent();
     }
   });
 
-  $('#default').on('click', function(){
-    if(alphaSorted){
+  // $('#default').on('click', function(){
+  //   if(alphaSorted){
+  //     alphaSorted = !alphaSorted;
+  //     slides = slidesOrg;
+  //   }
+  // });
+
+  // $('#alpha').on('click', function(){
+  //   if(!alphaSorted){
+  //     alphaSorted = !alphaSorted;
+  //     slidesOrg = slidesOrg || slides.slice(0);
+  //     slides.sort(function(a, b){
+  //       if(a.title > b.title){
+  //         return 1;
+  //       }
+  //       if(a.title < b.title){
+  //         return -1;
+  //       }
+  //       return 0;
+  //     });
+  //   }
+  // });
+  
+  $('#sortOrder').change(function(){
+    var newVal = $(this).val();
+    console.log('newVal', newVal);
+    if(alphaSorted === true && newVal === 'default'){
       alphaSorted = !alphaSorted;
       slides = slidesOrg;
-    }
-  });
-
-  $('#alpha').on('click', function(){
-    if(!alphaSorted){
+    }else if(alphaSorted === false && newVal === 'alpha'){
       alphaSorted = !alphaSorted;
       slidesOrg = slidesOrg || slides.slice(0);
       slides.sort(function(a, b){
@@ -174,11 +219,6 @@
         return 0;
       });
     }
-  });
-  
-  $('#sortOrder').change(function(){
-    var newVal = $(this).val();
-    console.log('newVal', newVal);
   });
   
   var callSinglePixelImg = function(){
