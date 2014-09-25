@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <style>
+    li {
+      display: none;
+    }
+  </style>
 </head>
 <body>
 <!--
@@ -52,8 +57,14 @@
   <button id="previous" onclick="callSinglePixelImg()" type="button" name="previous">previous</button>
   <button id="next" onclick="callSinglePixelImg()" type="button" name="next">next</button>
 
-  <button id="default" type="button" name="default">default</button>
-  <button id="alpha" type="button" name="alpha">alpha</button>
+  <!--<button id="default" type="button" name="default">default</button>
+  <button id="alpha" type="button" name="alpha">alpha</button>-->
+  <div>Sort order filter
+    <select id="sortOrder">
+      <option slelected="selected">default</option>
+      <option>alpha</option>
+    </select>
+  </div>
 
 
 </div>
@@ -67,6 +78,13 @@
   var alphaSorted = false;
   var slides = [];
   var slidesOrg;
+  var renderOnce = function(){
+    // $('li').first().show('slow', function showNext(){
+    //   $(this).next('li').show("slow");
+    // });
+    $('li').first().show();
+  };
+
   $.ajax({
     url: 'https://api2.healthline.com/api/service/2.0/slideshow/content?partnerId=7eef498c-f7fa-4f7c-81fd-b1cc53ac7ebc&contentid=17103&includeLang=en',
     type: 'GET',
@@ -75,17 +93,19 @@
       withCrendentials: true
     },
     success: function (data){
-      console.log('data', data);
       slides = data.data[0].slides;
-      console.log('slides', JSON.stringify(slides));
+      console.log('data', data);
       var url = "http://www.healthline.com/";
       var imageUrlCur = slides[i].image.imageUrl;
       var imageUrlNext = slides[i + 1].image.imageUrl;
-      $('.current').prepend('<img src="' + url + imageUrlCur + '">').css('display', 'none');
-      $('.next').prepend('<img src="' + url + imageUrlNext + '">').css('display', 'none');
-      $('li').first().show('fast', function showNext(){
-        $(this).next('li').show("fast");
-      })
+      // $('.current').prepend('<img src="' + url + imageUrlCur + '">').css('display', 'none');
+      $('.current').prepend('<img src="' + url + imageUrlCur + '">');
+      // $('.next').prepend('<img src="' + url + imageUrlNext + '">').css('display', 'none');
+      $('.next').prepend('<img src="' + url + imageUrlNext + '">');
+      // $('li').first().show('fast', function showNext(){
+      //   $(this).next('li').show("fast");
+      // });
+      renderOnce();
     },
     error: function (data){
       console.log('failed');
@@ -96,10 +116,11 @@
     if(i < 7){
       i++;
       var url = "http://www.healthline.com/";
-      console.log('slides', slides);
       var imageUrlNext = slides[i + 1].image.imageUrl;
+      $('li').hide();
       $('.current img').replaceWith($('.next img'));
       $('.next').prepend('<img src="' + url + imageUrlNext + '">');
+      renderOnce();
     }
   });
 
@@ -107,10 +128,11 @@
     if(i > 0){
       i--;
       var url = "http://www.healthline.com/";
-      console.log('slides', slides);
       var imageUrlNext = slides[i].image.imageUrl;
+      $('li').hide();
       $('.next img').replaceWith($('.current img'));
       $('.current').prepend('<img src="' + url + imageUrlNext + '">');
+      renderOnce();
     }
   });
 
@@ -118,7 +140,6 @@
     if(alphaSorted){
       alphaSorted = !alphaSorted;
       slides = slidesOrg;
-      console.log('slides', slides);
     }
   });
 
@@ -135,21 +156,18 @@
         }
         return 0;
       });
-      console.log('slides', slides);
     }
   });
-
+  
+  $('#sortOrder').change(function(){
+    var newVal = $(this).val();
+    console.log('newVal', newVal);
+  });
+  
   var callSinglePixelImg = function(){
     var url = 'http://www.healthline.com/images/clear.gif?' + new Date().getTime();
     $('body').append("<img class='singlePixel' src='"+ url + "'>");
     $('.singlePixel').remove();
-    // $('body').load('http://www.healthline.com/images/clear.gif', function() {
-    //   alert( "Load was performed." );
-    // });
-    // var script = document.createElement('script');
-    // script.type = 'image/gif';
-    // script.src = 'http://www.healthline.com/images/clear.gif';
-    // $('head').append(script);
   };
 
 
