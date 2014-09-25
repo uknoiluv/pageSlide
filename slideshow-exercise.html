@@ -2,18 +2,42 @@
 <html>
 <head>
   <style>
+    body {
+      position: absolute;
+      top: 50px;
+      left: 50px;
+      font-family: Tahoma, Geneva, sans-serif;
+    }
     li {
       display: none;
       float: left;
       list-style: none;
       position: relative;
       top: -10px;
-      right: 10px;
+      right: 20px;
     }
-    button {
+    #previous{
       float: left;
       position: relative;
       top: 140px;
+      width: 0;
+      height: 0;
+      border-top: 30px solid transparent;
+      border-bottom: 30px solid transparent;
+      border-right: 30px solid purple;
+      margin-right: -5px; 
+      z-index: 1; 
+    }
+    #next{
+      float: left;
+      position: relative;
+      top: 140px;
+      width: 0;
+      height: 0;
+      border-top: 30px solid transparent;
+      border-bottom: 30px solid transparent;
+      border-left: 30px solid purple;
+      margin-left: -5px;  
     }
     .sortOrderDiv {
       clear: both;
@@ -33,6 +57,21 @@
     h2, p {
       margin: 10px;
       color: purple;
+    }
+    .slideProgress {
+      position: relative;
+      width: 60px;
+      height: 30px;
+      color: #fff;
+      background-color: green;
+      text-align: center;
+      top: -30px;
+      left: -10px;
+    }
+    span {
+      position: relative;
+      height: 30px;
+      top: 20%;
     }
   </style>
 </head>
@@ -71,9 +110,13 @@
 
 
 <!-- example of HTML structure -->
-<button id="previous" onclick="callSinglePixelImg()" type="button" name="previous">previous</button>
+<a href="#" id="previous" onclick="callSinglePixelImg()" type="button" name="previous"></a>
 <div class="slideshow">
   <ul class="slides">
+    <div class="slideProgress">
+      <span id="currentSlide">1</span> 
+      <span>of 9</span>
+    </div>
     <li class="current">
       <!-- slide markup goes here -->
     </li>
@@ -85,10 +128,10 @@
     </li> -->
   </ul>
 </div>
-<button id="next" onclick="callSinglePixelImg()" type="button" name="next">next</button>
+<a href="#" id="next" onclick="callSinglePixelImg()" type="button" name="next"></a>
   <!--<button id="default" type="button" name="default">default</button>
   <button id="alpha" type="button" name="alpha">alpha</button>-->
-<div class="sortOrderDiv">Sort order filter
+<div class="sortOrderDiv"> Sort order filter 
   <select id="sortOrder">
     <option slelected="selected">default</option>
     <option>alpha</option>
@@ -110,11 +153,12 @@
     // $('li').first().show('slow', function showNext(){
     //   $(this).next('li').show("slow");
     // });
-    $('.current').first().show();
+    $('.current').show();
   };
   var descriptionInsert = function(i){
     var titleCur = '<div><h2>' + slides[i].title + '</h2></div>';
     var textCur = '<div>' + slides[i].body + '</div>';
+    $('#currentSlide').text(i + 1);
     if(i === 8){
       if(!$('.next div').length){
         // $('.next').prepend(textCur).prepend(titleCur);
@@ -160,7 +204,7 @@
   });
   
   $('#next').on('click', function(){
-    console.log('i', i);
+    console.log('next i', i);
     if(i < 7){
       i++;
       var url = "http://www.healthline.com/";
@@ -172,17 +216,20 @@
       $('.next').prepend('<img src="' + url + imageUrlNext + '">');
       renderCurrent();
     }else if(i === 7){
+      i++;
       $('li').hide();
-      descriptionInsert(8);
+      descriptionInsert(i);
       $('.next').show();
     }
+    console.log('next after i', i)
   });
 
   $('#previous').on('click', function(){
-    if(i === 7){
+    console.log('prev i', i)
+    if(i === 8){
       i--;
       $('li').hide();
-      descriptionInsert(7);
+      descriptionInsert(i);
       renderCurrent();
     }else if(i > 0){
       i--;
@@ -194,6 +241,7 @@
       descriptionInsert(i);
       renderCurrent();
     }
+    console.log('prev after i', i)
   });
 
   // $('#default').on('click', function(){
