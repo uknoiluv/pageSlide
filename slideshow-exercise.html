@@ -4,6 +4,14 @@
   <style>
     li {
       display: none;
+      float: left;
+      list-style: none;
+    }
+    button {
+      float: left;
+    }
+    .sortOrderDiv {
+      clear: both;
     }
   </style>
 </head>
@@ -43,6 +51,7 @@
 
 <!-- example of HTML structure -->
 <div class="slideshow">
+  <button id="previous" onclick="callSinglePixelImg()" type="button" name="previous">previous</button>
   <ul class="slides">
     <li class="current">
       <!-- slide markup goes here -->
@@ -54,12 +63,11 @@
       etc
     </li> -->
   </ul>
-  <button id="previous" onclick="callSinglePixelImg()" type="button" name="previous">previous</button>
   <button id="next" onclick="callSinglePixelImg()" type="button" name="next">next</button>
 
   <!--<button id="default" type="button" name="default">default</button>
   <button id="alpha" type="button" name="alpha">alpha</button>-->
-  <div>Sort order filter
+  <div class="sortOrderDiv">Sort order filter
     <select id="sortOrder">
       <option slelected="selected">default</option>
       <option>alpha</option>
@@ -113,19 +121,28 @@
   });
   
   $('#next').on('click', function(){
+    console.log('i', i);
     if(i < 7){
       i++;
       var url = "http://www.healthline.com/";
+      console.log('i+1', i + 1);
       var imageUrlNext = slides[i + 1].image.imageUrl;
       $('li').hide();
       $('.current img').replaceWith($('.next img'));
       $('.next').prepend('<img src="' + url + imageUrlNext + '">');
       renderOnce();
+    }else if(i === 7){
+      $('li').hide();
+      $('.next').show();
     }
   });
 
   $('#previous').on('click', function(){
-    if(i > 0){
+    if(i === 7){
+      i--;
+      $('li').hide();
+      $('li').first().show();
+    }else if(i > 0){
       i--;
       var url = "http://www.healthline.com/";
       var imageUrlNext = slides[i].image.imageUrl;
