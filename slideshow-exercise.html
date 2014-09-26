@@ -4,8 +4,8 @@
   <style>
     body {
       position: absolute;
-      top: 50px;
-      left: 50px;
+      top: 20px;
+      left: 40px;
       font-family: Tahoma, Geneva, sans-serif;
     }
     li {
@@ -13,13 +13,13 @@
       float: left;
       list-style: none;
       position: relative;
-      top: -10px;
+      top: -20px;
       right: 20px;
     }
     #previous{
       float: left;
       position: relative;
-      top: 140px;
+      top: 180px;
       width: 0;
       height: 0;
       border-top: 30px solid transparent;
@@ -27,43 +27,61 @@
       border-right: 30px solid purple;
       margin-right: -5px; 
       z-index: 1; 
+      opacity: 0.5;
     }
+/*    #previous:hover {
+      opacity: 0.9;
+    }*/
     #next{
       float: left;
       position: relative;
-      top: 140px;
+      top: 180px;
       width: 0;
       height: 0;
       border-top: 30px solid transparent;
       border-bottom: 30px solid transparent;
       border-left: 30px solid purple;
       margin-left: -5px;  
+      opacity: 0.5;
     }
+/*    #next:hover {
+      opacity: 0.9;
+    }*/
     .sortOrderDiv {
       clear: both;
+      color: purple;
+      /*background-color: #EBF5FF;*/
+      width: 190px;
+      border: 1px solid #3D0052;
+      text-align: center
     }
     .slideshow {
       height: auto;
       width: 700px;
       float: left;
       position: relative;
-      border: 1px solid black;
+      border: 1px solid #e3e3e3;
+      top: 30px;
+      box-shadow: 0 3px 3px -1px #e3e3e3,0 -3px 3px -1px #e3e3e3;
     }
     img {
       display: inline;
       float: left;
       margin: 10px;
     }
-    h2, p {
+    h2 {
       margin: 10px;
+      color: purple;
+    }
+    h1 {
       color: purple;
     }
     .slideProgress {
       position: relative;
-      width: 60px;
+      width: 80px;
       height: 30px;
       color: #fff;
-      background-color: green;
+      background-color: #33CC33;
       text-align: center;
       top: -30px;
       left: -10px;
@@ -72,6 +90,11 @@
       position: relative;
       height: 30px;
       top: 20%;
+    }
+    .summary {
+      clear: both;
+      width: 700px;
+      margin-bottom: 20px;
     }
   </style>
 </head>
@@ -110,6 +133,15 @@
 
 
 <!-- example of HTML structure -->
+
+<h1 class="slideTitle"></h1>
+<div class="summary"></div>
+<div class="sortOrderDiv"> Sort order filter 
+  <select id="sortOrder">
+    <option slelected="selected">default</option>
+    <option>alpha</option>
+  </select>
+</div>
 <a href="#" id="previous" onclick="callSinglePixelImg()" type="button" name="previous"></a>
 <div class="slideshow">
   <ul class="slides">
@@ -129,46 +161,48 @@
   </ul>
 </div>
 <a href="#" id="next" onclick="callSinglePixelImg()" type="button" name="next"></a>
-  <!--<button id="default" type="button" name="default">default</button>
-  <button id="alpha" type="button" name="alpha">alpha</button>-->
-<div class="sortOrderDiv"> Sort order filter 
-  <select id="sortOrder">
-    <option slelected="selected">default</option>
-    <option>alpha</option>
-  </select>
-</div>
-
 
 
 </body>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 
-<!-- <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script> -->
 <script>
+
+  
   var i = 0;
-  var alphaSorted = false;
   var slides = [];
   var slidesOrg;
+  var title;
+  var summary;
   var renderCurrent = function(){
-    // $('li').first().show('slow', function showNext(){
-    //   $(this).next('li').show("slow");
-    // });
     $('.current').show();
   };
   var descriptionInsert = function(i){
+    // console.log('i', i);
+    // console.log('inside desc slides', slides);
+    // if(i === 0){
+    //   $('.sortOrderDiv').css('visibility', 'visible');
+    // }else{
+    //   $('.sortOrderDiv').css('visibility', 'hidden');
+    // }
     var titleCur = '<div><h2>' + slides[i].title + '</h2></div>';
     var textCur = '<div>' + slides[i].body + '</div>';
     $('#currentSlide').text(i + 1);
     if(i === 8){
+      $('.next div').remove();
       if(!$('.next div').length){
-        // $('.next').prepend(textCur).prepend(titleCur);
         $('.next').append(titleCur).append(textCur);
       }
     }else{
       $('.current div').remove();
-      // $('.current').prepend(textCur).prepend(titleCur);
       $('.current').append(titleCur).append(textCur);
     }
+  };
+  
+  var callSinglePixelImg = function(){
+    var url = 'http://www.healthline.com/images/clear.gif?' + new Date().getTime();
+    $('body').append("<img class='singlePixel' src='"+ url + "'>");
+    $('.singlePixel').remove();
   };
 
   $.ajax({
@@ -180,21 +214,14 @@
     },
     success: function (data){
       slides = data.data[0].slides;
+      $('.slideTitle').html(data.data[0].title);
+      $('.summary').html(data.data[0].summary);
       console.log('data', data);
       var url = "http://www.healthline.com/";
       var imageUrlCur = slides[i].image.imageUrl;
-      // var titleCur = '<h2>' + slides[i].title + '</h2>';
-      // var textCur = slides[i].body;
       var imageUrlNext = slides[i + 1].image.imageUrl;
-      // var titleNext = '<h2>' + slides[i + 1].title + '</h2>';
-      // var textNext = slides[i + 1].body;
-      // $('.current').prepend('<img src="' + url + imageUrlCur + '">').css('display', 'none');
       $('.current').prepend('<img src="' + url + imageUrlCur + '">');
-      // $('.next').prepend('<img src="' + url + imageUrlNext + '">').css('display', 'none');
       $('.next').prepend('<img src="' + url + imageUrlNext + '">');
-      // $('li').first().show('fast', function showNext(){
-      //   $(this).next('li').show("fast");
-      // });
       descriptionInsert(0);
       renderCurrent();
     },
@@ -243,38 +270,16 @@
     }
     console.log('prev after i', i)
   });
-
-  // $('#default').on('click', function(){
-  //   if(alphaSorted){
-  //     alphaSorted = !alphaSorted;
-  //     slides = slidesOrg;
-  //   }
-  // });
-
-  // $('#alpha').on('click', function(){
-  //   if(!alphaSorted){
-  //     alphaSorted = !alphaSorted;
-  //     slidesOrg = slidesOrg || slides.slice(0);
-  //     slides.sort(function(a, b){
-  //       if(a.title > b.title){
-  //         return 1;
-  //       }
-  //       if(a.title < b.title){
-  //         return -1;
-  //       }
-  //       return 0;
-  //     });
-  //   }
-  // });
   
   $('#sortOrder').change(function(){
     var newVal = $(this).val();
     console.log('newVal', newVal);
-    if(alphaSorted === true && newVal === 'default'){
-      alphaSorted = !alphaSorted;
+    if(newVal === 'default'){
+      // alphaSorted = !alphaSorted;
       slides = slidesOrg;
-    }else if(alphaSorted === false && newVal === 'alpha'){
-      alphaSorted = !alphaSorted;
+      console.log('default', slides);
+    }else if(newVal === 'alpha'){
+      // alphaSorted = !alphaSorted;
       slidesOrg = slidesOrg || slides.slice(0);
       slides.sort(function(a, b){
         if(a.title > b.title){
@@ -285,16 +290,22 @@
         }
         return 0;
       });
+      console.log('alpha', slides);
     }
   });
+
+  $('#previous').hover(function(){
+    i !== 0 ? $(this).css('opacity', 0.9) : null;
+  }, function(){
+    $(this).css('opacity', 0.5);
+  });
+
+  $('#next').hover(function(){
+    i !== 8 ? $(this).css('opacity', 0.9) : null;
+  }, function(){
+    $(this).css('opacity', 0.5);
+  });
   
-  var callSinglePixelImg = function(){
-    var url = 'http://www.healthline.com/images/clear.gif?' + new Date().getTime();
-    $('body').append("<img class='singlePixel' src='"+ url + "'>");
-    $('.singlePixel').remove();
-  };
-
-
 </script>
 
 </html>
