@@ -63,7 +63,7 @@
       float: left;
       position: relative;
       border: 1px solid #e3e3e3;
-      top: 30px;
+      top: 20px;
       box-shadow: 0 3px 3px -1px #e3e3e3,0 -3px 3px -1px #e3e3e3;
       overflow: hidden;
     }
@@ -86,7 +86,7 @@
       color: #fff;
       background-color: #33CC33;
       text-align: center;
-      top: 50px;
+      top: 35px;
       left: 40px;
       z-index: 1;
     }
@@ -225,7 +225,8 @@
   var width = -1 * $('li').width();
   var listArrOrg;
   var defSeq = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-  var alpSeq = [0, 3, 6, 8, 4, 2, 5, 1, 7];
+  // var alpSeq = [0, 3, 6, 8, 4, 2, 5, 1, 7];
+  var alpSeq = [];
   var option = 'default';
   // var renderCurrent = function(){
   //   $('.current').show();
@@ -289,15 +290,16 @@
       // $('li').hide();
       // $('.current img').replaceWith($('.next img'));
       // descriptionInsert(i);
-      console.log('length next', $('.slide' + (i) + ' .image img').length);
-      if($('.slide' + (i) + ' .image img').length === 0){
-        var imageUrlCur = slides[i].image.imageUrl;
-        $('.slide' + (i) + ' .image').prepend('<img src="' + url + imageUrlCur + '">');
+      var next = option === 'default' ? defSeq[i] : alpSeq[i]; 
+      var next2 = option === 'default' ? defSeq[i + 1] : alpSeq[i + 1]; 
+      if($('.slide' + next + ' .image img').length === 0){
+        var imageUrlCur = slides[next].image.imageUrl;
+        $('.slide' + next + ' .image').prepend('<img src="' + url + imageUrlCur + '">');
       }
       console.log('length next after next', $('.slide' + (i + 1) + ' .image img').length);
-      if($('.slide' + (i + 1) + ' .image img').length === 0){
-        var imageUrlNext = slides[i + 1].image.imageUrl;
-        $('.slide' + (i + 1) + ' .image').prepend('<img src="' + url + imageUrlNext + '">');
+      if($('.slide' + next2 + ' .image img').length === 0){
+        var imageUrlNext = slides[next2].image.imageUrl;
+        $('.slide' + next2 + ' .image').prepend('<img src="' + url + imageUrlNext + '">');
       }
       $('ul').animate({left: width * (i)}, 500);
       // renderCurrent();
@@ -320,16 +322,18 @@
       // renderCurrent();
     }else if(i > 0){
       i--;
+      var prev = option === 'default' ? defSeq[i] : alpSeq[i]; 
+      var prev2 = option === 'default' ? defSeq[i - 1] : alpSeq[i - 1]; 
       console.log('length prev', $('.slide' + (i) + ' .image img').length);
-      if($('.slide' + (i) + ' .image img').length === 0){
-        var imageUrlCur = slides[i].image.imageUrl;
-        $('.slide' + (i) + ' .image').prepend('<img src="' + url + imageUrlCur + '">');
+      if($('.slide' + prev + ' .image img').length === 0){
+        var imageUrlCur = slides[prev].image.imageUrl;
+        $('.slide' + prev + ' .image').prepend('<img src="' + url + imageUrlCur + '">');
       }
       console.log('length prev before prev', $('.slide' + (i - 1) + ' .image img').length);
       if(i !== 0){
-        if($('.slide' + (i - 1) + ' .image img').length === 0){
-          var imageUrlNext = slides[i - 1].image.imageUrl;
-          $('.slide' + (i - 1) + ' .image').prepend('<img src="' + url + imageUrlNext + '">');
+        if($('.slide' + prev2 + ' .image img').length === 0){
+          var imageUrlNext = slides[prev2].image.imageUrl;
+          $('.slide' + prev2 + ' .image').prepend('<img src="' + url + imageUrlNext + '">');
         }
       }
       $('ul').animate({left: width * (i)}, 500);
@@ -346,10 +350,14 @@
   
   $('#sortOrder').change(function(){
     option = $(this).val();
+    var url = "http://www.healthline.com/";
     var listArr = $('li').toArray();
+    // var curLoc = option === 'alpha' ? alpSeq[i] : defSeq[i];
+    var curLoc;
     if(option === 'alpha'){
       console.log('hit alpha');
       // slidesOrg = slidesOrg || slides.slice(0);
+
       listArrOrg = listArr.slice(); 
       listArr.sort(function(a, b){
         if(a.children[1].children[0].innerHTML > b.children[1].children[0].innerHTML){
@@ -360,12 +368,34 @@
         }
         return 0;
       });
+
+      var listArrLen = listArr.length;
+      if(alpSeq.length === 0){
+        for(var k = 0; k < listArrLen; k++){
+          alpSeq.push(parseInt(listArr[k].className.slice(5)));
+        }  
+      }
+      console.log('alpseq', alpSeq);
+
+      curLoc = alpSeq[i];
+
       $('.slides').append(listArr);
+      if($('.slide' + curLoc + ' .image img').length === 0){
+        var imageUrlCur = slides[curLoc].image.imageUrl;
+        $('.slide' + curLoc + ' .image').prepend('<img src="' + url + imageUrlCur + '">');
+      }
     }else if(option === 'default'){
       console.log('hit default');
       listArr = listArrOrg;
       $('.slides').append(listArr);
+      curLoc = defSeq[i];
+      if($('.slide' + curLoc + ' .image img').length === 0){
+        var imageUrlCur = slides[curLoc].image.imageUrl;
+        $('.slide' + curLoc + ' .image').prepend('<img src="' + url + imageUrlCur + '">');
+      }
     }
+
+
     console.log('listArr', listArr);
   });
 
