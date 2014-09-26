@@ -9,12 +9,14 @@
       font-family: Tahoma, Geneva, sans-serif;
     }
     li {
-      display: none;
+      /*display: none;*/
+      display: block;
       float: left;
       list-style: none;
       position: relative;
-      top: -20px;
+      top: 10px;
       right: 20px;
+      width: 700px;
     }
     #previous{
       float: left;
@@ -63,14 +65,15 @@
       border: 1px solid #e3e3e3;
       top: 30px;
       box-shadow: 0 3px 3px -1px #e3e3e3,0 -3px 3px -1px #e3e3e3;
+      overflow: hidden;
     }
     img {
-      display: inline;
+      display: inline-block;
       float: left;
       margin: 10px;
     }
     h2 {
-      margin: 10px;
+      /*margin: 10px;*/
       color: purple;
     }
     h1 {
@@ -83,8 +86,9 @@
       color: #fff;
       background-color: #33CC33;
       text-align: center;
-      top: -30px;
-      left: -10px;
+      top: 50px;
+      left: 40px;
+      z-index: 1;
     }
     span {
       position: relative;
@@ -95,6 +99,22 @@
       clear: both;
       width: 700px;
       margin-bottom: 20px;
+    }
+    ul {
+      position: absolute;
+      width: 1800%;
+    }
+    div .content {
+      margin-left: 40px;
+      position: relative;
+      float: left;
+      width: 340px;
+    }
+    div .image{
+      position: relative;
+      float: left;
+      height: 280px;
+      width: 280px;
     }
   </style>
 </head>
@@ -142,22 +162,51 @@
     <option>alpha</option>
   </select>
 </div>
+<div class="slideProgress">
+      <span id="currentSlide">1</span> 
+      <span>of 9</span>
+</div>
 <a href="#" id="previous" onclick="callSinglePixelImg()" type="button" name="previous"></a>
 <div class="slideshow">
   <ul class="slides">
-    <div class="slideProgress">
-      <span id="currentSlide">1</span> 
-      <span>of 9</span>
-    </div>
-    <li class="current">
+    <li class="slide0">
       <!-- slide markup goes here -->
+      <div class="image">
+      </div>  
     </li>
-    <li class="next">
+    <li class="slide1">
       <!-- slide markup goes here -->
+      <div class="image">
+      </div>  
     </li>
-    <!-- <li>
-      etc
-    </li> -->
+    <li class="slide2">
+      <div class="image">
+      </div>  
+    </li>
+    <li class="slide3">
+      <div class="image">
+      </div>  
+    </li>
+    <li class="slide4">
+      <div class="image">
+      </div>  
+    </li>
+    <li class="slide5">  
+      <div class="image">
+      </div>  
+    </li>
+    <li class="slide6">
+      <div class="image">
+      </div>  
+    </li>
+    <li class="slide7">
+      <div class="image">
+      </div>  
+    </li>
+    <li class="slide8">
+      <div class="image">
+      </div>  
+    </li>
   </ul>
 </div>
 <a href="#" id="next" onclick="callSinglePixelImg()" type="button" name="next"></a>
@@ -168,28 +217,30 @@
 
 <script>
 
-  
   var i = 0;
   var slides = [];
   var slidesOrg;
   var title;
   var summary;
-  var renderCurrent = function(){
-    $('.current').show();
-  };
+  var width = -1 * $('li').width();
+
+  // var renderCurrent = function(){
+  //   $('.current').show();
+  // };
   var descriptionInsert = function(i){
-    var titleCur = '<div><h2>' + slides[i].title + '</h2></div>';
-    var textCur = '<div>' + slides[i].body + '</div>';
-    $('#currentSlide').text(i + 1);
-    if(i === 8){
-      $('.next div').remove();
-      if(!$('.next div').length){
-        $('.next').append(titleCur).append(textCur);
-      }
-    }else{
-      $('.current div').remove();
-      $('.current').append(titleCur).append(textCur);
-    }
+    var title = '<div class="content"><h2>' + slides[i].title + '</h2></div>';
+    var text = '<div class="content">' + slides[i].body + '</div>';
+    // $('#currentSlide').text(i + 1);
+    // if(i === 8){
+    //   $('.next div').remove();
+    //   if(!$('.next div').length){
+    //     $('.next').append(titleCur).append(textCur);
+    //   }
+    // }else{
+    //   $('.current div').remove();
+    //   $('.current').append(titleCur).append(textCur);
+    // }
+    $('.slide' + i).append(title).append(text);
   };
   
   var callSinglePixelImg = function(){
@@ -207,16 +258,20 @@
     },
     success: function (data){
       slides = data.data[0].slides;
+      var slidesLen = slides.length;
       $('.slideTitle').html(data.data[0].title);
       $('.summary').html(data.data[0].summary);
       console.log('data', data);
       var url = "http://www.healthline.com/";
+      console.log('slides[i]', slides[i]);
       var imageUrlCur = slides[i].image.imageUrl;
       var imageUrlNext = slides[i + 1].image.imageUrl;
-      $('.current').prepend('<img src="' + url + imageUrlCur + '">');
-      $('.next').prepend('<img src="' + url + imageUrlNext + '">');
-      descriptionInsert(0);
-      renderCurrent();
+      $('.slide0 .image').prepend('<img src="' + url + imageUrlCur + '">');
+      $('.slide1 .image').prepend('<img src="' + url + imageUrlNext + '">');
+      for(var j = 0; j < slidesLen; j++){
+        descriptionInsert(j);
+      }
+      // renderCurrent();
     },
     error: function (data){
       console.log('failed');
@@ -224,39 +279,49 @@
   });
   
   $('#next').on('click', function(){
+    
     if(i < 7){
       i++;
       var url = "http://www.healthline.com/";
       var imageUrlNext = slides[i + 1].image.imageUrl;
-      $('li').hide();
-      $('.current img').replaceWith($('.next img'));
-      descriptionInsert(i);
-      $('.next').prepend('<img src="' + url + imageUrlNext + '">');
-      renderCurrent();
+      // $('li').hide();
+      // $('.current img').replaceWith($('.next img'));
+      // descriptionInsert(i);
+      console.log('length', $('.slide' + (i + 1) + ' .image img').length);
+      if($('.slide' + (i + 1) + ' .image img').length === 0){
+        $('.slide' + (i + 1) + ' .image').prepend('<img src="' + url + imageUrlNext + '">');
+      }
+      $('ul').animate({left: width * (i)}, 500);
+      // renderCurrent();
     }else if(i === 7){
       i++;
-      $('li').hide();
-      descriptionInsert(i);
-      $('.next').show();
+      $('ul').animate({left: width * (i)}, 500);
+      // $('li').hide();
+      // descriptionInsert(i);
+      // $('.next').show();
     }
+    $('#currentSlide').text(i + 1);
   });
 
   $('#previous').on('click', function(){
     if(i === 8){
       i--;
-      $('li').hide();
-      descriptionInsert(i);
-      renderCurrent();
+      $('ul').animate({left: width * (i)}, 500);
+      // $('li').hide();
+      // descriptionInsert(i);
+      // renderCurrent();
     }else if(i > 0){
       i--;
-      var url = "http://www.healthline.com/";
-      var imageUrlNext = slides[i].image.imageUrl;
-      $('li').hide();
-      $('.next img').replaceWith($('.current img'));
-      $('.current').prepend('<img src="' + url + imageUrlNext + '">');
-      descriptionInsert(i);
-      renderCurrent();
+      $('ul').animate({left: width * (i)}, 500);
+      // var url = "http://www.healthline.com/";
+      // var imageUrlNext = slides[i].image.imageUrl;
+      // $('li').hide();
+      // $('.next img').replaceWith($('.current img'));
+      // $('.current').prepend('<img src="' + url + imageUrlNext + '">');
+      // descriptionInsert(i);
+      // renderCurrent();
     }
+    $('#currentSlide').text(i + 1);
   });
   
   $('#sortOrder').change(function(){
