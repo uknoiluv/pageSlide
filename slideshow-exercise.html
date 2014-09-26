@@ -9,8 +9,6 @@
       font-family: Tahoma, Geneva, sans-serif;
     }
     li {
-      /*display: none;*/
-      /*display: inline;*/
       float: left;
       list-style: none;
       position: relative;
@@ -31,9 +29,6 @@
       z-index: 1; 
       opacity: 0.5;
     }
-/*    #previous:hover {
-      opacity: 0.9;
-    }*/
     #next{
       float: left;
       position: relative;
@@ -46,13 +41,9 @@
       margin-left: -5px;  
       opacity: 0.5;
     }
-/*    #next:hover {
-      opacity: 0.9;
-    }*/
     .sortOrderDiv {
       clear: both;
       color: purple;
-      /*background-color: #EBF5FF;*/
       width: 190px;
       border: 1px solid #3D0052;
       text-align: center
@@ -68,12 +59,10 @@
       overflow: hidden;
     }
     img {
-      display: inline-block;
       float: left;
       margin: 10px;
     }
     h2 {
-      /*margin: 10px;*/
       color: purple;
     }
     h1 {
@@ -106,6 +95,7 @@
     }
     div .content {
       margin-left: 40px;
+      margin-top: -10px;
       position: relative;
       float: left;
       width: 340px;
@@ -170,12 +160,10 @@
 <div class="slideshow">
   <ul class="slides">
     <li class="slide0">
-      <!-- slide markup goes here -->
       <div class="image">
       </div>  
     </li>
     <li class="slide1">
-      <!-- slide markup goes here -->
       <div class="image">
       </div>  
     </li>
@@ -225,33 +213,32 @@
   var width = -1 * $('li').width();
   var listArrOrg;
   var defSeq = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-  // var alpSeq = [0, 3, 6, 8, 4, 2, 5, 1, 7];
   var alpSeq = [];
   var option = 'default';
-  // var renderCurrent = function(){
-  //   $('.current').show();
-  // };
+  var url = "http://www.healthline.com/";
+
   var descriptionInsert = function(i){
     var title = '<div class="content"><h2>' + slides[i].title + '</h2></div>';
     var text = '<div class="content">' + slides[i].body + '</div>';
-    // $('#currentSlide').text(i + 1);
-    // if(i === 8){
-    //   $('.next div').remove();
-    //   if(!$('.next div').length){
-    //     $('.next').append(titleCur).append(textCur);
-    //   }
-    // }else{
-    //   $('.current div').remove();
-    //   $('.current').append(titleCur).append(textCur);
-    // }
     $('.slide' + i).append(title).append(text);
   };
   
   var callSinglePixelImg = function(){
-    var url = 'http://www.healthline.com/images/clear.gif?' + new Date().getTime();
-    $('body').append("<img class='singlePixel' src='"+ url + "'>");
+    var singlePixelUrl = 'http://www.healthline.com/images/clear.gif?' + new Date().getTime();
+    $('body').append("<img class='singlePixel' src='"+ singlePixelUrl + "'>");
     $('.singlePixel').remove();
   };
+
+  var hoverEffect = function(elem, num){
+    $(elem).hover(function(){
+      i !== num ? $(this).css('opacity', 0.9) : null;
+    }, function(){
+      $(this).css('opacity', 0.5);
+    });
+  };
+
+  hoverEffect('#previous', 0);
+  hoverEffect('#next', 8);
 
   $.ajax({
     url: 'https://api2.healthline.com/api/service/2.0/slideshow/content?partnerId=7eef498c-f7fa-4f7c-81fd-b1cc53ac7ebc&contentid=17103&includeLang=en',
@@ -265,9 +252,6 @@
       var slidesLen = slides.length;
       $('.slideTitle').html(data.data[0].title);
       $('.summary').html(data.data[0].summary);
-      console.log('data', data);
-      var url = "http://www.healthline.com/";
-      console.log('slides[i]', slides[i]);
       var imageUrlCur = slides[i].image.imageUrl;
       var imageUrlNext = slides[i + 1].image.imageUrl;
       $('.slide0 .image').prepend('<img src="' + url + imageUrlCur + '">');
@@ -275,7 +259,6 @@
       for(var j = 0; j < slidesLen; j++){
         descriptionInsert(j);
       }
-      // renderCurrent();
     },
     error: function (data){
       console.log('failed');
@@ -283,32 +266,22 @@
   });
   
   $('#next').on('click', function(){
-    
     if(i < 7){
       i++;
-      var url = "http://www.healthline.com/";
-      // $('li').hide();
-      // $('.current img').replaceWith($('.next img'));
-      // descriptionInsert(i);
       var next = option === 'default' ? defSeq[i] : alpSeq[i]; 
       var next2 = option === 'default' ? defSeq[i + 1] : alpSeq[i + 1]; 
       if($('.slide' + next + ' .image img').length === 0){
         var imageUrlCur = slides[next].image.imageUrl;
         $('.slide' + next + ' .image').prepend('<img src="' + url + imageUrlCur + '">');
       }
-      console.log('length next after next', $('.slide' + (i + 1) + ' .image img').length);
       if($('.slide' + next2 + ' .image img').length === 0){
         var imageUrlNext = slides[next2].image.imageUrl;
         $('.slide' + next2 + ' .image').prepend('<img src="' + url + imageUrlNext + '">');
       }
       $('ul').animate({left: width * (i)}, 500);
-      // renderCurrent();
     }else if(i === 7){
       i++;
       $('ul').animate({left: width * (i)}, 500);
-      // $('li').hide();
-      // descriptionInsert(i);
-      // $('.next').show();
     }
     $('#currentSlide').text(i + 1);
   });
@@ -317,19 +290,14 @@
     if(i === 8){
       i--;
       $('ul').animate({left: width * (i)}, 500);
-      // $('li').hide();
-      // descriptionInsert(i);
-      // renderCurrent();
     }else if(i > 0){
       i--;
       var prev = option === 'default' ? defSeq[i] : alpSeq[i]; 
       var prev2 = option === 'default' ? defSeq[i - 1] : alpSeq[i - 1]; 
-      console.log('length prev', $('.slide' + (i) + ' .image img').length);
       if($('.slide' + prev + ' .image img').length === 0){
         var imageUrlCur = slides[prev].image.imageUrl;
         $('.slide' + prev + ' .image').prepend('<img src="' + url + imageUrlCur + '">');
       }
-      console.log('length prev before prev', $('.slide' + (i - 1) + ' .image img').length);
       if(i !== 0){
         if($('.slide' + prev2 + ' .image img').length === 0){
           var imageUrlNext = slides[prev2].image.imageUrl;
@@ -337,27 +305,15 @@
         }
       }
       $('ul').animate({left: width * (i)}, 500);
-      // var url = "http://www.healthline.com/";
-      // var imageUrlNext = slides[i].image.imageUrl;
-      // $('li').hide();
-      // $('.next img').replaceWith($('.current img'));
-      // $('.current').prepend('<img src="' + url + imageUrlNext + '">');
-      // descriptionInsert(i);
-      // renderCurrent();
     }
     $('#currentSlide').text(i + 1);
   });
   
   $('#sortOrder').change(function(){
     option = $(this).val();
-    var url = "http://www.healthline.com/";
     var listArr = $('li').toArray();
-    // var curLoc = option === 'alpha' ? alpSeq[i] : defSeq[i];
     var curLoc;
     if(option === 'alpha'){
-      console.log('hit alpha');
-      // slidesOrg = slidesOrg || slides.slice(0);
-
       listArrOrg = listArr.slice(); 
       listArr.sort(function(a, b){
         if(a.children[1].children[0].innerHTML > b.children[1].children[0].innerHTML){
@@ -375,7 +331,6 @@
           alpSeq.push(parseInt(listArr[k].className.slice(5)));
         }  
       }
-      console.log('alpseq', alpSeq);
 
       curLoc = alpSeq[i];
 
@@ -385,7 +340,6 @@
         $('.slide' + curLoc + ' .image').prepend('<img src="' + url + imageUrlCur + '">');
       }
     }else if(option === 'default'){
-      console.log('hit default');
       listArr = listArrOrg;
       $('.slides').append(listArr);
       curLoc = defSeq[i];
@@ -394,21 +348,6 @@
         $('.slide' + curLoc + ' .image').prepend('<img src="' + url + imageUrlCur + '">');
       }
     }
-
-
-    console.log('listArr', listArr);
-  });
-
-  $('#previous').hover(function(){
-    i !== 0 ? $(this).css('opacity', 0.9) : null;
-  }, function(){
-    $(this).css('opacity', 0.5);
-  });
-
-  $('#next').hover(function(){
-    i !== 8 ? $(this).css('opacity', 0.9) : null;
-  }, function(){
-    $(this).css('opacity', 0.5);
   });
   
 </script>
