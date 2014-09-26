@@ -178,13 +178,6 @@
     $('.current').show();
   };
   var descriptionInsert = function(i){
-    // console.log('i', i);
-    // console.log('inside desc slides', slides);
-    // if(i === 0){
-    //   $('.sortOrderDiv').css('visibility', 'visible');
-    // }else{
-    //   $('.sortOrderDiv').css('visibility', 'hidden');
-    // }
     var titleCur = '<div><h2>' + slides[i].title + '</h2></div>';
     var textCur = '<div>' + slides[i].body + '</div>';
     $('#currentSlide').text(i + 1);
@@ -231,11 +224,9 @@
   });
   
   $('#next').on('click', function(){
-    console.log('next i', i);
     if(i < 7){
       i++;
       var url = "http://www.healthline.com/";
-      console.log('i+1', i + 1);
       var imageUrlNext = slides[i + 1].image.imageUrl;
       $('li').hide();
       $('.current img').replaceWith($('.next img'));
@@ -248,11 +239,9 @@
       descriptionInsert(i);
       $('.next').show();
     }
-    console.log('next after i', i)
   });
 
   $('#previous').on('click', function(){
-    console.log('prev i', i)
     if(i === 8){
       i--;
       $('li').hide();
@@ -268,18 +257,13 @@
       descriptionInsert(i);
       renderCurrent();
     }
-    console.log('prev after i', i)
   });
   
   $('#sortOrder').change(function(){
     var newVal = $(this).val();
-    console.log('newVal', newVal);
     if(newVal === 'default'){
-      // alphaSorted = !alphaSorted;
       slides = slidesOrg;
-      console.log('default', slides);
     }else if(newVal === 'alpha'){
-      // alphaSorted = !alphaSorted;
       slidesOrg = slidesOrg || slides.slice(0);
       slides.sort(function(a, b){
         if(a.title > b.title){
@@ -290,7 +274,6 @@
         }
         return 0;
       });
-      console.log('alpha', slides);
     }
   });
 
