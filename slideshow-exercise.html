@@ -286,12 +286,17 @@
     if(i < 7){
       i++;
       var url = "http://www.healthline.com/";
-      var imageUrlNext = slides[i + 1].image.imageUrl;
       // $('li').hide();
       // $('.current img').replaceWith($('.next img'));
       // descriptionInsert(i);
-      console.log('length', $('.slide' + (i + 1) + ' .image img').length);
+      console.log('length next', $('.slide' + (i) + ' .image img').length);
+      if($('.slide' + (i) + ' .image img').length === 0){
+        var imageUrlCur = slides[i].image.imageUrl;
+        $('.slide' + (i) + ' .image').prepend('<img src="' + url + imageUrlCur + '">');
+      }
+      console.log('length next after next', $('.slide' + (i + 1) + ' .image img').length);
       if($('.slide' + (i + 1) + ' .image img').length === 0){
+        var imageUrlNext = slides[i + 1].image.imageUrl;
         $('.slide' + (i + 1) + ' .image').prepend('<img src="' + url + imageUrlNext + '">');
       }
       $('ul').animate({left: width * (i)}, 500);
@@ -315,6 +320,18 @@
       // renderCurrent();
     }else if(i > 0){
       i--;
+      console.log('length prev', $('.slide' + (i) + ' .image img').length);
+      if($('.slide' + (i) + ' .image img').length === 0){
+        var imageUrlCur = slides[i].image.imageUrl;
+        $('.slide' + (i) + ' .image').prepend('<img src="' + url + imageUrlCur + '">');
+      }
+      console.log('length prev before prev', $('.slide' + (i - 1) + ' .image img').length);
+      if(i !== 0){
+        if($('.slide' + (i - 1) + ' .image img').length === 0){
+          var imageUrlNext = slides[i - 1].image.imageUrl;
+          $('.slide' + (i - 1) + ' .image').prepend('<img src="' + url + imageUrlNext + '">');
+        }
+      }
       $('ul').animate({left: width * (i)}, 500);
       // var url = "http://www.healthline.com/";
       // var imageUrlNext = slides[i].image.imageUrl;
