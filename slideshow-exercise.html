@@ -204,11 +204,9 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 
 <script>
-
+(function(){
   var i = 0;
   var slides = [];
-  var slidesOrg;
-  var title;
   var summary;
   var width = -1 * $('li').width();
   var listArrOrg;
@@ -324,16 +322,13 @@
         }
         return 0;
       });
-
       var listArrLen = listArr.length;
       if(alpSeq.length === 0){
         for(var k = 0; k < listArrLen; k++){
           alpSeq.push(parseInt(listArr[k].className.slice(5)));
         }  
       }
-
       curLoc = alpSeq[i];
-
       $('.slides').append(listArr);
       if($('.slide' + curLoc + ' .image img').length === 0){
         var imageUrlCur = slides[curLoc].image.imageUrl;
@@ -349,7 +344,7 @@
       }
     }
   });
-  
+})();  
 </script>
 
 </html>
